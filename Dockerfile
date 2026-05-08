@@ -1,5 +1,5 @@
 # build front-end
-FROM node:lts-alpine AS frontend
+FROM node:24.15.0-alpine AS frontend
 
 RUN npm install pnpm -g
 # 安装 Git
@@ -20,7 +20,7 @@ COPY . /app
 RUN pnpm run build
 
 # build backend
-FROM node:lts-alpine as backend
+FROM node:24.15.0-alpine as backend
 
 RUN npm install pnpm -g
 
@@ -36,8 +36,8 @@ COPY /service /app
 
 RUN pnpm build
 
-# service
-FROM node:lts-alpine
+# service #node:lts-alpine
+FROM node:24.15.0-alpine 
 
 RUN npm install pnpm -g
 
