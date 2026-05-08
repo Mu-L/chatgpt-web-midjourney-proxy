@@ -11,7 +11,7 @@ COPY ./package.json /app
 
 COPY ./pnpm-lock.yaml /app
 
-RUN printf "onlyBuiltDependencies[]=esbuild\nonlyBuiltDependencies[]=aws-sdk\n" >> .npmrc \
+RUN node -e "const fs=require('fs'),p=JSON.parse(fs.readFileSync('package.json','utf8'));(p.pnpm=p.pnpm||{}).onlyBuiltDependencies=['esbuild','aws-sdk'];fs.writeFileSync('package.json',JSON.stringify(p,null,2))" \
  && pnpm install
 
 COPY . /app
@@ -29,7 +29,7 @@ COPY /service/package.json /app
 
 COPY /service/pnpm-lock.yaml /app
 
-RUN printf "onlyBuiltDependencies[]=esbuild\nonlyBuiltDependencies[]=aws-sdk\n" >> .npmrc \
+RUN node -e "const fs=require('fs'),p=JSON.parse(fs.readFileSync('package.json','utf8'));(p.pnpm=p.pnpm||{}).onlyBuiltDependencies=['esbuild','aws-sdk'];fs.writeFileSync('package.json',JSON.stringify(p,null,2))" \
  && pnpm install
 
 COPY /service /app
@@ -47,7 +47,7 @@ COPY /service/package.json /app
 
 COPY /service/pnpm-lock.yaml /app
 
-RUN printf "onlyBuiltDependencies[]=esbuild\nonlyBuiltDependencies[]=aws-sdk\n" >> .npmrc \
+RUN node -e "const fs=require('fs'),p=JSON.parse(fs.readFileSync('package.json','utf8'));(p.pnpm=p.pnpm||{}).onlyBuiltDependencies=['esbuild','aws-sdk'];fs.writeFileSync('package.json',JSON.stringify(p,null,2))" \
  && pnpm install --prod \
  && rm -rf /root/.npm /root/.pnpm-store /usr/local/share/.cache /tmp/*
 
