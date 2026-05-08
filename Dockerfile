@@ -1,7 +1,7 @@
 # build front-end
 FROM node:lts-alpine AS frontend
-
-RUN npm install pnpm@10.11.0 -g
+#其实 10.33.2 曾经编译成功过
+RUN npm install pnpm@10.33.2 -g
 # 安装 Git
 RUN apk add --no-cache git
 
@@ -20,7 +20,7 @@ RUN pnpm run build
 # build backend
 FROM node:lts-alpine AS backend
 
-RUN npm install pnpm@10.11.0 -g
+RUN npm install pnpm@10.33.2 -g
 
 WORKDIR /app
 
@@ -37,7 +37,7 @@ RUN pnpm build
 # service
 FROM node:lts-alpine
 
-RUN npm install pnpm@10.11.0 -g
+RUN npm install pnpm@10.33.2 -g
 
 WORKDIR /app
 
