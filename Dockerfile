@@ -1,59 +1,75 @@
-# build front-end
-FROM node:lts-alpine AS frontend
+# =========================
+# frontend build
+# =========================
+FROM node:20-alpine AS frontend
 
-RUN npm install pnpm -g
-# 安装 Git
-RUN apk add --no-cache git
+# git 有些依赖会需要
+RUN apk add --no-cache git libc6-compat
+
+# 使用 corepack 管理 pnpm（官方推荐）
+RUN corepack enable
 
 WORKDIR /app
 
-COPY ./package.json /app
+COPY package.json pnpm-lock.yaml ./
 
-COPY ./pnpm-lock.yaml /app
+# 允许 postinstall scripts
+RUN pnpm install --frozen-lockfile --ignore-scripts=false
 
-#RUN git --version
-
-RUN pnpm install
-
-COPY . /app
+COPY . .
 
 RUN pnpm run build
 
-# build backend
-FROM node:lts-alpine as backend
 
-RUN npm install pnpm -g
+# =========================
+# backend build
+# =========================
+FROM node:20-alpine AS backend
+
+RUN apk add --no-cache libc6-compat
+
+RUN corepack enable
 
 WORKDIR /app
 
-COPY /service/package.json /app
+COPY service/package.json service/pnpm-lock.yaml ./
 
-COPY /service/pnpm-lock.yaml /app
+RUN pnpm install --frozen-lockfile --ignore-scripts=false
 
-RUN pnpm install
-
-COPY /service /app
+COPY service/ .
 
 RUN pnpm build
 
-# service
-FROM node:lts-alpine
 
-RUN npm install pnpm -g
+# =========================
+# production runtime
+# =========================
+FROM node:20-alpine
+
+RUN apk add --no-cache libc6-compat
+
+RUN corepack enable
+
+ENV NODE_ENV=production
 
 WORKDIR /app
 
-COPY /service/package.json /app
+COPY service/package.json service/pnpm-lock.yaml ./
 
-COPY /service/pnpm-lock.yaml /app
+# 生产依赖
+RUN pnpm install --prod --frozen-lockfile --ignore-scripts=false \
+    && rm -rf /root/.npm \
+    && rm -rf /root/.pnpm-store \
+    && rm -rf /usr/local/share/.cache \
+    && rm -rf /tmp/*
 
-#RUN pnpm install --production  && rm -rf /root/.npm /root/.pnpm-store /usr/local/share/.cache /tmp/*
-RUN pnpm install --prod --frozen-lockfile --ignore-scripts=false  && rm -rf /root/.npm /root/.pnpm-store /usr/local/share/.cache /tmp/*
+# backend source
+COPY service/ .
 
-COPY /service /app
-
+# frontend dist
 COPY --from=frontend /app/dist /app/public
 
+# compiled backend
 COPY --from=backend /app/build /app/build
 
 EXPOSE 3002
