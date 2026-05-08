@@ -12,7 +12,7 @@ COPY ./package.json /app
 COPY ./pnpm-lock.yaml /app
 
 #RUN git --version
-RUN pnpm config set ignore-builds false \
+RUN echo "ignore-builds=false" >> .npmrc \
  && pnpm install
 
 COPY . /app
@@ -30,7 +30,7 @@ COPY /service/package.json /app
 
 COPY /service/pnpm-lock.yaml /app
 
-RUN pnpm config set ignore-builds false \
+RUN echo "ignore-builds=false" >> .npmrc \
  && pnpm install
 
 COPY /service /app
