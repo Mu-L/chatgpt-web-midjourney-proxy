@@ -11,7 +11,7 @@ COPY ./package.json /app
 
 COPY ./pnpm-lock.yaml /app
 
-RUN pnpm install
+RUN pnpm install --no-frozen-lockfile
 
 COPY . /app
 
@@ -28,7 +28,7 @@ COPY /service/package.json /app
 
 COPY /service/pnpm-lock.yaml /app
 
-RUN pnpm install
+RUN pnpm install --no-frozen-lockfile
 
 COPY /service /app
 
@@ -45,7 +45,7 @@ COPY /service/package.json /app
 
 COPY /service/pnpm-lock.yaml /app
 
-RUN pnpm install --prod \
+RUN pnpm install --prod --no-frozen-lockfile \
  && rm -rf /root/.npm /root/.pnpm-store /usr/local/share/.cache /tmp/*
 
 COPY /service /app
