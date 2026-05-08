@@ -48,7 +48,10 @@ COPY /service/package.json /app
 
 COPY /service/pnpm-lock.yaml /app
 
-RUN pnpm config set ignore-builds false && pnpm install --production && rm -rf /root/.npm /root/.pnpm-store /usr/local/share/.cache /tmp/*
+#RUN pnpm config set ignore-builds false && pnpm install --production && rm -rf /root/.npm /root/.pnpm-store /usr/local/share/.cache /tmp/*
+RUN pnpm config set ignore-builds false \
+ && pnpm install --production \
+ && rm -rf /root/.npm /root/.pnpm-store /usr/local/share/.cache /tmp/*
 
 COPY /service /app
 
